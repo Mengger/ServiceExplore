@@ -1,4 +1,4 @@
-package com.until.readXML;
+package com.until;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,28 +13,41 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.alibaba.fastjson.JSON;
 import com.pjo.web.FilterRecord;
 import com.pjo.web.ListenerRecord;
 import com.pjo.web.ServletRecord;
+import com.servlerBean.ServlertContent;
 
 public class ReadXml {
 
-	private static String path = "D:\\yytgk\\ol_java\\WebContent\\WEB-INF\\web.xml";
+	private String path;
 
-	public static void read() {
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public ServlertContent read() {
+		ServlertContent servletContent=new ServlertContent();
+		if(path==null)return null;
+		try {
 		File f = new File(path);
 		DocumentBuilder db = null;
 		DocumentBuilderFactory dbf = null;
-		try {
 			dbf = DocumentBuilderFactory.newInstance();
 			db = dbf.newDocumentBuilder();
 			Document doc = db.parse(f);
 
-			System.out.println(JSON.toJSON(getServletList(doc)));
+			servletContent.setFilterList(getFilterList(doc));
+			servletContent.setServletList(getServletList(doc));
+			servletContent.setListenerList(getListenerList(doc));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return servletContent;
 	}
 
 	public static Map<String, String> getMap(Document doc,String []a){
@@ -108,9 +121,6 @@ public class ReadXml {
 			}
 		}
 		return listenerList;
-	}
-	public static void main(String[] args) {
-		read();
 	}
 
 }

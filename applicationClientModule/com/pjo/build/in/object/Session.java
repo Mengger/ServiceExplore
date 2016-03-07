@@ -5,20 +5,26 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-import com.until.readXML.SessionIdKey;
+import com.until.SessionIdKey;
 
 public class Session implements HttpSession {
 	
-	private Cookie cookie;
 	private String sessionID;
 	private long creationTime;
 	private long lastAccessedTime;
 	private Map<String, Object> attribute;
 	private int maxInactiveInterval;
+	
+	public Session(String sessionID){
+		this.sessionID=sessionID;
+	}
+	
+	public Session(){
+		generateNewSession();
+	}
 	
 	public void generateNewSession(){
 		if(isNew()){
@@ -29,7 +35,6 @@ public class Session implements HttpSession {
 				this.sessionID=null;
 				e.printStackTrace();
 			}
-			this.cookie=new Cookie("JSESSIONID", sessionID);
 			this.creationTime= new Date().getTime();
 		}else{
 			this.lastAccessedTime=new Date().getTime();
