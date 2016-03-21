@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="applicationClientModule"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="con" path="com.genuitec.runtime.library/com.genuitec.generic_6.0">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.appclient"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="applicationClientModule/META-INF/lib/commons-compress-1.8.1.jar" sourcepath="D:/devTool/scm/m2/org/apache/commons/commons-compress/1.8.1/commons-compress-1.8.1-sources.jar"/>
+	<classpathentry kind="lib" path="applicationClientModule/META-INF/lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="applicationClientModule/META-INF/lib/lang-1.0.jar" sourcepath="D:/devTool/scm/m2/com/alibaba/toolkit/common/lang/lang/1.0/lang-1.0-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

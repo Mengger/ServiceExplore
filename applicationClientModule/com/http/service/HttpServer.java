@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 
 import com.pjo.build.in.object.Request;
 import com.pjo.build.in.object.Response;
@@ -56,15 +58,19 @@ public class HttpServer {
                 socket = serverSocket.accept();  
                 inputStream = socket.getInputStream();  
                 outputStream = socket.getOutputStream();  
-                OutputStreamWriter  osw = new OutputStreamWriter(outputStream,"utf-8");   
+                PrintStream op=new PrintStream(outputStream);
                 
-                osw.write("HTTP/1.1 200 OK\r\n");
-                osw.write("Server: Apache-Coyote/1.1\r\n");
-                osw.write("Set-Cookie: JSESSIONID=03493794995CE31A0F131787B6C6CBB2; Path=/; HttpOnly\r\n");
-                osw.write("Content-Type: text/html;charset=UTF-8\r\n");
-                osw.write("Transfer-Encoding: chunked\r\n");
-                osw.write("Date: Tue, 19 May 2015 02:48:27 GMT\r\n");
-                osw.write("\r\n");
+                op.println("HTTP/1.1 200 OK");  
+                Date now = new Date();  
+                op.println("Data:" + now);  
+                op.println("Server: MengerTest");  
+                op.println("Access-Control-Allow-Origin:*");  
+                 
+                op.println("Content-Type: text/css; charset=ISO-8859-1");  
+                op.println();  
+                
+              
+                
                 
                 //创建请求对象并解析  
                 Request request = new Request(inputStream);  
@@ -108,32 +114,24 @@ public class HttpServer {
                 }
                 
                
-                
-             /*   for(String head:response.getHeader().keySet()){
-                	outputStream.write((head+":"+response.getHeader().get(head)+"\t\r").getBytes());
+              /*  
+                for(String head:response.getHeader().keySet()){
+                	op.println(head+":"+response.getHeader().get(head)+"\t\r");
                 }
                 
                 for(String head:response.getResponseHeader().keySet()){
-                	outputStream.write((head+":"+response.getResponseHeader().get(head)+"\t\r").getBytes());
+                	op.println(head+":"+response.getResponseHeader().get(head)+"\t\r");
                 }
-                */
                 
-                 socket.setReceiveBufferSize(25188);
-                 socket.setSendBufferSize(43800);
-                 socket.setOOBInline(true);
-                 socket.setKeepAlive(false);
-                 socket.setPerformancePreferences(1,0,1);
-                 socket.setReuseAddress(true);
-                 socket.setSoLinger(true,25);
-                 socket.setSoTimeout(5000);
-                 socket.setTcpNoDelay(true);
-                 socket.setTrafficClass(28);
+                */
+               
                  
                  
-                 osw.flush();
-                 osw.close();
+                 
                 outputStream.flush();
+                op.flush();
                 outputStream.close();
+                op.close();
                 //关闭socket  
                 if(socket != null){
                      socket.close();  

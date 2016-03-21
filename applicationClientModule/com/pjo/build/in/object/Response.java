@@ -90,8 +90,8 @@ public class Response implements HttpServletResponse {
                      ch = fis.read(bytes,0,BUFFER_SIZE);  
                  }  
              }else{  
-                 String errorMessage = "<h1>404</h1>";  
-                 outputStream.write(errorMessage.getBytes());  
+            	 String errorMessage = "<h1>艹,眼睛找瞎了都没找到，一定是你的输入出了问题。恩，一定是这样的！！！</h1>";  
+            	 outputStream.write(errorMessage.getBytes());  
              }  
          }catch(Exception e){  
          	e.printStackTrace(); 

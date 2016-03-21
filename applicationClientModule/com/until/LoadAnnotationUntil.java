@@ -1,6 +1,7 @@
 package com.until;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -45,8 +46,10 @@ public class LoadAnnotationUntil {
 	 * @param relativePath	工程的相对位置
 	 * @param classPath		类的位置
 	 * @param projectName	项目名称
+	 * @throws ClassNotFoundException 
+	 * @throws MalformedURLException 
 	 */
-	public static void LoadClassByClassPath(String path){
+	public static void LoadClassByClassPath(String path) throws ClassNotFoundException, MalformedURLException{
 		int index=path.indexOf("WEB-INF\\classes");
 		String relativePath=path.substring(0,index-1);
 		String classPath=path.substring(index+16).replace(".class", "").replace("\\", ".");
@@ -54,37 +57,41 @@ public class LoadAnnotationUntil {
 		relativePath=relativePath+"\\WEB-INF\\classes\\";
 		URLClassLoader loader;
 		Class clazz=null;
-		try {
-			loader=new URLClassLoader(new URL[]{new URL("file:"+relativePath)});
-			clazz=loader.loadClass(classPath);
-			boolean condition=false;
-			condition=clazz.isAnnotationPresent(WebServlet.class);
-			if(condition){
-				WebServlet webServlet=(WebServlet)clazz.getAnnotation(WebServlet.class);
-				System.out.println(webServlet.value()[0]);
-				ServletRecord servletRecord=new ServletRecord();
-				servletRecord.setUrlpattern(webServlet.value()[0]);
-				servletRecord.setServletClass(classPath);
-				servletRecord.setServletName(webServlet.name());
-				ServlertContent servletContent=ServletContentCollection.servletContentList.get(projectName);
-				if(null==servletContent) servletContent=new ServlertContent();
-				if(null!=servletContent.getServletList()){
-					servletContent.getServletList().add(servletRecord);
-				}else{
-					List<ServletRecord> servletList=new ArrayList<ServletRecord>();
-					servletList.add(servletRecord);
-					servletContent.setServletList(servletList);;
-				}
+		loader=new URLClassLoader(new URL[]{new URL("file:"+relativePath)});
+		clazz=loader.loadClass(classPath);
+		boolean condition=false;
+		condition=clazz.isAnnotationPresent(WebServlet.class);
+		if(condition){
+			WebServlet webServlet=(WebServlet)clazz.getAnnotation(WebServlet.class);
+			System.out.println(webServlet.value()[0]);
+			ServletRecord servletRecord=new ServletRecord();
+			servletRecord.setUrlpattern(webServlet.value()[0]);
+			servletRecord.setServletClass(classPath);
+			servletRecord.setServletName(webServlet.name());
+			ServlertContent servletContent=ServletContentCollection.servletContentList.get(projectName);
+			if(null==servletContent) servletContent=new ServlertContent();
+			if(null!=servletContent.getServletList()){
+				servletContent.getServletList().add(servletRecord);
+			}else{
+				List<ServletRecord> servletList=new ArrayList<ServletRecord>();
+				servletList.add(servletRecord);
+				servletContent.setServletList(servletList);;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	
 	public static void main(String[] args) {
 		for(String filePath:getClassPath("C:\\Users\\wb-limeng.g\\Desktop\\aaaa\\webapps\\")){
 		//	System.out.println(filePath);
-			LoadClassByClassPath(filePath);
+			try {
+				LoadClassByClassPath(filePath);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}

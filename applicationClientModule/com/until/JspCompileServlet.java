@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,7 +169,7 @@ public class JspCompileServlet {
 		String []outPrint=in.split("\r");
 		StringBuffer rtn=new StringBuffer();
 		for(String oo:outPrint){
-			rtn.append("out.println(\"");
+			rtn.append("out.write(\"");
 			rtn.append(oo.replace("\t", "\\t").replace("\"", "\\\""));
 			rtn.append("\");");
 			rtn.append("\t\r");
@@ -213,10 +212,10 @@ public class JspCompileServlet {
 		if(parent!=null&&!parent.exists()){ 
 			parent.mkdirs(); 
 		}
-		ObjectOutputStream oos=null;
+		FileOutputStream oos=null;
 		try {
 			file.createNewFile();
-			oos= new ObjectOutputStream(new FileOutputStream(file));
+			oos= new FileOutputStream(file);
 			oos.write(content.getBytes("UTF-8"));
 			
 		} catch (FileNotFoundException e) {

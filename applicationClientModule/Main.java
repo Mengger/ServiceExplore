@@ -39,7 +39,13 @@ public class Main {
 				readXml.setPath(path);
 				ServletContentCollection.servletContentList.put(fileFloder,readXml.read());
 				for(String newPath:LoadAnnotationUntil.getClassPath(HttpServer.WEB_ROOT+fileFloder+"//")){
-					LoadAnnotationUntil.LoadClassByClassPath(newPath);
+					try {
+						System.out.println("开始加载："+newPath);
+						LoadAnnotationUntil.LoadClassByClassPath(newPath);
+					} catch (Exception e) {
+						System.out.println("注解加载错误："+newPath);
+						e.printStackTrace();
+					}
 				}
 			}
 		}
