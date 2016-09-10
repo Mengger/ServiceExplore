@@ -127,6 +127,12 @@ public class ResponseTest implements ServletResponse{
     public void setLocale(Locale arg0) {  
         // TODO Auto-generated method stub  
           
-    }  
+    }
+
+	@Override
+	public void setContentLengthLong(long arg0) {
+		// TODO Auto-generated method stub
+		
+	}  
   
 }  

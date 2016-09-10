@@ -339,4 +339,10 @@ public class Response implements HttpServletResponse {
 
 	}
 
+	@Override
+	public void setContentLengthLong(long arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -264,6 +264,14 @@ public class RequestTest implements ServletRequest{
 			ServletResponse servletResponse) throws IllegalStateException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+
+	@Override
+	public long getContentLengthLong() {
+		// TODO Auto-generated method stub
+		return 0;
 	}  
   
 }  
