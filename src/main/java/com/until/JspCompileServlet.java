@@ -19,9 +19,11 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import org.apache.commons.lang.StringUtils;
+
 import javax.tools.JavaCompiler.CompilationTask;
 
-import com.alibaba.common.lang.StringUtil;
 import com.pjo.build.in.object.JspServletBean;
 
 public class JspCompileServlet {
@@ -263,11 +265,12 @@ public class JspCompileServlet {
 	 * @param name
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static String changeNameStyle(String name){
 		String []names=name.split("_");
 		String rtn="Jsp";
 		for(String namePart:names){
-			rtn=rtn+StringUtil.capitalize(namePart);
+			rtn=rtn+StringUtils.capitalise(namePart);
 		}
 		return rtn;
 	}

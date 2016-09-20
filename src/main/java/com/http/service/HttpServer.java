@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HttpServer {
 	/** 
@@ -16,6 +18,8 @@ public class HttpServer {
       
     //收到关闭命令  
     private boolean shutdown = false;  
+    
+    private  ExecutorService fixedThreadPool = Executors.newFixedThreadPool(2);  
   
     /** 
      * @param args 
@@ -40,8 +44,7 @@ public class HttpServer {
             Socket socket = null;  
             try{  
               
-                
-            	new HanderDeal(serverSocket.accept()).start();
+            	fixedThreadPool.execute(new HanderDeal(serverSocket.accept()));
               
             }catch(Exception e){  
                 e.printStackTrace();  
