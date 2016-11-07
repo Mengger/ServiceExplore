@@ -43,7 +43,7 @@ public class HanderDeal extends Thread {
 		op.println("Content-Type: text/css; charset=utf-8");
 		op.println();
 
-		System.out.println("**************************************************");
+		/*System.out.println("**************************************************");
 		Date start=new Date();
 		System.out.println(start.getHours()+"-"+start.getMinutes()+"-"+start.getSeconds());
 		System.out.println(Thread.currentThread().getId());
@@ -51,7 +51,7 @@ public class HanderDeal extends Thread {
 		Date end=new Date();
 		System.out.println(end.getHours()+"-"+end.getMinutes()+"-"+end.getSeconds());
 		System.out.println("**************************************************");
-
+*/
 		// 创建请求对象并解析
 		Request request = new Request(inputStream);
 		request.parse();

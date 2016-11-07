@@ -1,4 +1,6 @@
-/bin
+/bin/
+/.classpath
 /target/
-.classpath
-.project
+/.settings/
+/.project
+/conf.properties
