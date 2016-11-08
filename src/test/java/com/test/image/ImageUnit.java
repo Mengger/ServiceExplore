@@ -40,6 +40,16 @@ public class ImageUnit {
 	
 	/**
 	 * 
+	 * @param imageInfo[图片宽度][图片长度]
+	 */
+	public void updateImageUnit(int[][] imageInfo){
+		this.imageInfo = imageInfo;
+		this.imageHeight = imageInfo.length;
+		this.imageWidth = imageInfo[0].length;
+	}
+	
+	/**
+	 * 
 	 * @param img		图片块的所有像素的信息
 	 * @param width		图片块的长度
 	 * @param height	图片块的宽度
@@ -57,6 +67,22 @@ public class ImageUnit {
 		}
 		this.imageHeight = height;
 		this.imageWidth = width;
+	}
+	
+	/**
+	 * 获取该方块的所有信息
+	 * @return
+	 */
+	public int[] getImageInfos(){
+		int[] rtn = new int[imageHeight*imageWidth];
+		int index = 0;
+		for (int i = 0; i < imageHeight; i++) {
+			for (int j = 0; j < imageWidth; j++) {
+				rtn[index] = imageInfo[i][j];
+				index++;
+			}
+		}
+		return rtn;
 	}
 	
 }

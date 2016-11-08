@@ -8,20 +8,23 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import com.test.image.ImageUnit;
+import com.test.image.ImageUntils;
+
 public class Test {
 
 	public static void main(String[] args) throws Exception {
+		String fileName = "seg2.jpg";
+		File file = new File("C://Users//Administrator//Desktop//img//"+fileName);
+		String a = fileName.substring(0, fileName.indexOf("."));
+		new File("C://Users//Administrator//Desktop//img//"+a).mkdirs();
+		new Test();
+		ImageIO.write(Test.testImageShow(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//bestThresh.jpg"));
+		ImageIO.write(Test.testImageShow2(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment.jpg"));
+		ImageIO.write(Test.testImageShow1(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment2.jpg"));
+		ImageIO.write(Test.testImageShow3(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//otsuThresh.jpg"));
 		for (int i = 1; i < 8; i++) {
 			
-			String fileName = i+".jpg";
-			File file = new File("C://Users//Administrator//Desktop//img//"+fileName);
-			String a = fileName.substring(0, fileName.indexOf("."));
-			new File("C://Users//Administrator//Desktop//img//"+a).mkdirs();
-			new Test();
-		//	ImageIO.write(Test.testImageShow(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//bestThresh.jpg"));
-		//	ImageIO.write(Test.testImageShow2(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment.jpg"));
-		//	ImageIO.write(Test.testImageShow1(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment2.jpg"));
-			ImageIO.write(Test.testImageShow3(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//otsuThresh.jpg"));
 		}
 	}
 
@@ -88,7 +91,7 @@ public class Test {
 	}
 	
 	
-	public static BufferedImage testImageShow3(File file) throws IOException {
+	public static BufferedImage testImageShow3(File file) throws Exception {
 
 		BufferedImage bi = (BufferedImage) ImageIO.read(file);
 
@@ -98,30 +101,42 @@ public class Test {
 
 		int[] pix = new int[width * height];
 		int index = 0;
+		
+		int[][] dd = new int[height][width];
 		// 扫描图片
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {// 行扫描
 				pix[index] = bi.getRGB(j, i);
+				dd[i][j] = bi.getRGB(j, i);
+				
 				index++;
 			}
 		}
+		
+		
 
-		int flag = otsuThresh(pix, width, height);
+		/*int flag = otsuThresh(pix, width, height);
+		pix = thSegment(pix, width, height, flag);*/
+		
+		
+		
+		ImageUnit[][] rt = ImageUntils.syncopateImage(dd, 30, 20);
+		int[][]  m = ImageUntils.mergeImage2(rt);
+		
+		
 
-		pix = thSegment(pix, width, height, flag);
-
-		Map<Integer,String> ssd=new HashMap<>();
+		//Map<Integer,String> ssd=new HashMap<>();
 		// 扫描图片
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {// 行扫描
-				bi.setRGB(j, i, pix[j + i * width]);
-				ssd.put(pix[j + i * width], "");
+				bi.setRGB(j, i, m[i][j]);
+				//ssd.put(pix[j + i * width], "");
 			}
 		}
 		
-		for (Integer d:ssd.keySet()) {
+		/*for (Integer d:ssd.keySet()) {
 			System.out.println(d);
-		}
+		}*/
 		
 		return bi;
 	}
@@ -145,7 +160,7 @@ public class Test {
 		}
 
 		int flag = segment(pix, width, height);
-
+		System.out.println(flag);
 		pix = thSegment(pix, width, height, flag);
 
 		// 扫描图片

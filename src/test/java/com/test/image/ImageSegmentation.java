@@ -1,7 +1,14 @@
 package com.test.image;
 
 public class ImageSegmentation {
-	// 一维最大熵分割算法
+	/**
+	 * 一维最大熵分割算法
+	 * 获取阀值
+	 * @param pix	图片灰度流
+	 * @param w		图片长度
+	 * @param h		图片宽度
+	 * @return		图片分割阀值
+	 */
 	public static int segment(int[] pix, int w, int h) {
 		int i, j, t;
 		double a1, a2, max, pt;
@@ -57,7 +64,14 @@ public class ImageSegmentation {
 		return t;
 	}
 
-	//大律法(otsu阀值分割)
+	/**
+	 * 大律法(otsu阀值分割)
+	 * 获取阀值
+	 * @param pix	图片灰度流
+	 * @param w		图片长度
+	 * @param h		图片宽度
+	 * @return		图片分割阀值
+	 */
 	public static int otsuThresh(int[] pix, int iw, int ih) {
 		int wh = iw * ih;
 		int[][] inIm = new int[iw][ih];
@@ -110,7 +124,14 @@ public class ImageSegmentation {
 		return T;
 	}
 
-	// 二维最大熵分割算法
+	/**
+	 * 二维最大熵分割算法
+	 * 获取阀值
+	 * @param pix	图片灰度流
+	 * @param w		图片长度
+	 * @param h		图片宽度
+	 * @return		图片分割阀值
+	 */
 	public static int segment2(int[] pix, int w, int h) {
 		int i, j, u, v, t;
 		double a1, a2, max, pa, pb;
@@ -192,7 +213,14 @@ public class ImageSegmentation {
 		return t;
 	}
 
-	//最佳阀值分割
+	/**
+	 * 最佳阀值分割
+	 * 获取阀值
+	 * @param pix	图片灰度流
+	 * @param w		图片长度
+	 * @param h		图片宽度
+	 * @return		图片分割阀值
+	 */
 	public static int bestThresh(int[] pix, int w, int h) {
 		int i, j, thresh, newthresh, gmax, gmin; // 最大,最小灰度值
 		double[] p = new double[256];
