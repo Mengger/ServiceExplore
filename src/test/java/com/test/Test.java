@@ -14,17 +14,17 @@ import com.test.image.ImageUntils;
 public class Test {
 
 	public static void main(String[] args) throws Exception {
-		String fileName = "seg2.jpg";
-		File file = new File("C://Users//Administrator//Desktop//img//"+fileName);
-		String a = fileName.substring(0, fileName.indexOf("."));
-		new File("C://Users//Administrator//Desktop//img//"+a).mkdirs();
-		new Test();
-		ImageIO.write(Test.testImageShow(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//bestThresh.jpg"));
-		ImageIO.write(Test.testImageShow2(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment.jpg"));
-		ImageIO.write(Test.testImageShow1(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment2.jpg"));
-		ImageIO.write(Test.testImageShow3(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//otsuThresh.jpg"));
-		for (int i = 1; i < 8; i++) {
+		for (int i = 1; i < 9; i++) {
 			
+			String fileName = i+".jpg";
+			File file = new File("C://Users//Administrator//Desktop//img//"+fileName);
+			String a = fileName.substring(0, fileName.indexOf("."));
+			new File("C://Users//Administrator//Desktop//img//"+a).mkdirs();
+			new Test();
+			ImageIO.write(Test.testImageShow(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//bestThresh.jpg"));
+			ImageIO.write(Test.testImageShow2(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment.jpg"));
+			ImageIO.write(Test.testImageShow1(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//segment2.jpg"));
+			ImageIO.write(Test.testImageShow3(file), "jpg", new File("C://Users//Administrator//Desktop//img//"+a+"//otsuThresh.jpg"));
 		}
 	}
 
