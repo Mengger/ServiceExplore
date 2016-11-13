@@ -1,4 +1,6 @@
-package com.test.image;
+package com.test.image.until;
+
+import com.test.image.entry.ImageUnit;
 
 public class ImageSegmentAdapt extends ImageSegmentation {
 

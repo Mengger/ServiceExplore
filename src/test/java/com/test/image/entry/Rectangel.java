@@ -1,4 +1,4 @@
-package com.test.image;
+package com.test.image.entry;
 
 public class Rectangel {
 	//左上角
@@ -7,6 +7,15 @@ public class Rectangel {
 	//右下角
 	private Poit rightDown;
 	
+	public Rectangel(){
+	}
+	
+	public Rectangel(int leftUperX,int leftUperY,int rightDownX,int rightDownY){
+		this.leftUper.x=leftUperX;
+		this.leftUper.y=leftUperY;
+		this.rightDown.x=rightDownX;
+		this.rightDown.y=rightDownY;
+	}
 	
 	public Poit getLeftUper() {
 		return leftUper;
@@ -56,6 +65,41 @@ public class Rectangel {
 		this.rightDown.y=this.rightDown.y+size;
 	}
 	
+	/**
+	 *向左移动 
+	 * @param size
+	 */
+	public void moveLeft(int size){
+		this.rightDown.x=this.rightDown.x-size;
+		this.leftUper.x=this.leftUper.x-size;
+	}
+	
+	/**
+	 * 向右移动
+	 * @param size
+	 */
+	public void moveRight(int size){
+		this.rightDown.x=this.rightDown.x+size;
+		this.leftUper.x=this.leftUper.x+size;
+	}
+	
+	/**
+	 * 向上移动
+	 * @param size
+	 */
+	public void moveUp(int size){
+		this.rightDown.y=this.rightDown.y+size;
+		this.leftUper.y=this.leftUper.y+size;
+	}
+	
+	/**
+	 * 向下移动
+	 * @param size
+	 */
+	public void moveDown(int size){
+		this.rightDown.y=this.rightDown.y-size;
+		this.leftUper.y=this.leftUper.y-size;
+	}
 	
 
 	public class Poit{

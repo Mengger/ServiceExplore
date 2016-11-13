@@ -1,4 +1,4 @@
-package com.test.image;
+package com.test.image.entry;
 
 /**
  * 图片遍历按照行遍历

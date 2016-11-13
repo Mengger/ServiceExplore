@@ -1,4 +1,4 @@
-package com.test.image;
+package com.test.image.until;
 
 public class ImageCutUntil {
 

@@ -1,5 +1,9 @@
 package com.test.image;
 
+import com.test.image.entry.ImageUnit;
+import com.test.image.until.ImageSegmentAdapt;
+import com.test.image.until.ImageUntils;
+
 public class SegmentFactory {
 
 	/**

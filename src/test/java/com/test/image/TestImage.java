@@ -6,6 +6,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import com.test.Test;
+import com.test.image.until.ImageUntils;
 
 public class TestImage {
 
