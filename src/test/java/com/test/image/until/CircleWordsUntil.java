@@ -25,11 +25,15 @@ public class CircleWordsUntil {
 		this.background=background;
 	}
 
-	private void circleFirstWord(){
-		for (int i = 0; i < image.getImageHeight(); i++) {
-			for (int j = 0; j < image.getImageWidth(); j++) {
-				int poit = image.getImageInfo()[i][j];
-				
+	private void generatePoint(){
+		//首次产生16个点，在产生这个点之前  要确认 图片的大小  一个汉字要是显示清楚 至少是16*16像素
+		if(imageHeight>100&&imageWidth>100){
+			int h = imageHeight/5;
+			int w = imageWidth/5;
+			for (int i = 0; i < 5; i++) {
+				for (int j = 0; j < 5; j++) {
+					
+				}
 			}
 		}
 	}
@@ -49,7 +53,6 @@ public class CircleWordsUntil {
 			condition = judgeEdgeIsExitWord(rectangel);
 		}
 	}
-	
 	
 	/**
 	 * 根据当前矩形的位置，让矩形自动向右适配
