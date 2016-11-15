@@ -7,6 +7,9 @@ public class Rectangel {
 	//右下角
 	private Poit rightDown;
 	
+	//中间点
+	private Poit beginPont;
+	
 	public Rectangel(){
 	}
 	
@@ -17,6 +20,15 @@ public class Rectangel {
 		this.rightDown.y=rightDownY;
 	}
 	
+	public Poit getBeginPont() {
+		return beginPont;
+	}
+
+	public void setBeginPont(int x,int y) {
+		this.beginPont.x = x;
+		this.beginPont.y = y;
+	}
+
 	public Poit getLeftUper() {
 		return leftUper;
 	}
