@@ -2,13 +2,17 @@ package com.test.image.entry;
 
 public class Rectangel {
 	//左上角
-	private Poit leftUper;
+	private Poit leftUper = new Poit();
 	
 	//右下角
-	private Poit rightDown;
+	private Poit rightDown = new Poit();
 	
 	//中间点
-	private Poit beginPont;
+	private Poit beginPont = new Poit();
+	//矩形长度
+	private int width;
+	//宽度
+	private int height;
 	
 	public Rectangel(){
 	}
@@ -18,6 +22,46 @@ public class Rectangel {
 		this.leftUper.y=leftUperY;
 		this.rightDown.x=rightDownX;
 		this.rightDown.y=rightDownY;
+		this.height=rightDownY-leftUperY;
+		this.width=rightDownX-leftUperX;
+	}
+	
+	public int getDiagonalSquare(){
+		return width*width+height*height;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public void setBeginPont(Poit beginPont) {
+		this.beginPont = beginPont;
+	}
+
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof Rectangel){
+			Rectangel rectangel = (Rectangel)obj;
+			if((rectangel.getRightDown().getX()==this.rightDown.x)&&(rectangel.getRightDown().getY()==this.rightDown.y)
+				&&(rectangel.getLeftUper().getX()==this.leftUper.x)&&(rectangel.getLeftUper().getY()==this.leftUper.y)
+				&&(rectangel.getBeginPont().getX()==this.beginPont.x)&&(rectangel.getBeginPont().getY()==this.beginPont.y)){
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 	
 	public Poit getBeginPont() {
@@ -113,23 +157,5 @@ public class Rectangel {
 		this.leftUper.y=this.leftUper.y-size;
 	}
 	
-
-	public class Poit{
-		private int x;
-		private int y;
-		public int getX() {
-			return x;
-		}
-		public void setX(int x) {
-			this.x = x;
-		}
-		public int getY() {
-			return y;
-		}
-		public void setY(int y) {
-			this.y = y;
-		}
-		
-	}
 
 }
