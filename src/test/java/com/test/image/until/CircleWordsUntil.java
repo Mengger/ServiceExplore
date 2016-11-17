@@ -59,9 +59,14 @@ public class CircleWordsUntil {
 		CircleWordsUntil ddd=new CircleWordsUntil(new ImageUnit(imgg), -1);
 		ddd.circleFirst();
 		
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				//image.setRGB(j, i, -16777216);
+				image.setRGB(j, i, ddd.imageInfo[i][j]);
+			}
+		}
 		
-		
-		File wf = new File("/Users/jack/Desktop/157.png");
+		File wf = new File("/Users/jack/Desktop/222.png");
 		ImageIO.write(image, "png", wf);
 		//ImageUnit imageUnit = new ImageUnit(img);
 	}
@@ -83,11 +88,20 @@ public class CircleWordsUntil {
 				}
 				index++;
 			}
-			first.remove(smallIndex);
-			first.remove(biggestIndex);
+			/*first.remove(smallIndex);
+			first.remove(biggestIndex);*/
 		}
 
 		for(Rectangel rectangel:first){
+			/*int x1 = rectangel.getLeftUper().getX();
+			int x2 = rectangel.getRightDown().getX();
+			int y1 = rectangel.getLeftUper().getY();
+			int y2 = rectangel.getRightDown().getY();
+			for (int i = y1; i < y2; i++) {
+				for (int j = x1; j < x2; j++) {
+					imageInfo[i][j]=-16777216;
+				}
+			}*/
 			int top = rectangel.getLeftUper().getY();
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
@@ -108,8 +122,8 @@ public class CircleWordsUntil {
 				}
 			}
 			for (int i = 0; i < imageHeight; i++) {
-				if(i>y1&&i<=y2){
-					this.imageInfo[i][x1]=-16777216;
+				if(i>=y1&&i<=y2){
+					this.imageInfo[i][x2]=-16777216;
 				}
 			}
 		}
@@ -138,9 +152,9 @@ public class CircleWordsUntil {
 				needRemove.add(rectangel);
 			}
 		}
-		for(Rectangel rectangel:needRemove){
+		/*for(Rectangel rectangel:needRemove){
 			rectangelList.remove(rectangel);
-		}
+		}*/
 	}
 
 	/**
@@ -170,8 +184,8 @@ public class CircleWordsUntil {
 			if(y>5) y=5;
 			int w = imageWidth/x;
 			int h = imageHeight/y;
-			for (int i = 0; i < y; i++) {
-				for (int j = 0; j < x; j++) {
+			for (int i = 0; i < y-1; i++) {
+				for (int j = 0; j < x-1; j++) {
 					int centerX = w*(j+1);
 					int centerY = h*(i+1);
 					Rectangel rectangel = new Rectangel(centerX-4, centerY-4, centerX+4, centerY+4);
@@ -189,30 +203,41 @@ public class CircleWordsUntil {
 	 * @param rectangel
 	 */
 	public void automaticCircleSingleWord(Rectangel rectangel){
-		boolean condition = true;
-		while (condition) {
-			autoExpansionToRight(rectangel);
-			autoExpansionToLeft(rectangel);
-			autoExpansionToUp(rectangel);
-			autoExpansionToDown(rectangel);
-			condition = judgeEdgeIsExitWord(rectangel);
+		int checkResult = judgeEdgeIsExitWord(rectangel);
+		while (checkResult!=0) {
+			if((checkResult&4)!=0){
+				autoExpansionToRight(rectangel);
+			}
+			if((checkResult&1)!=0){
+				autoExpansionToLeft(rectangel);
+			}
+			if((checkResult&8)!=0){
+				autoExpansionToUp(rectangel);
+			}
+			if((checkResult&2)!=0){
+				autoExpansionToDown(rectangel);
+			}
+			checkResult = judgeEdgeIsExitWord(rectangel);
 		}
 		Poit poit = rectangel.getBeginPont();
 		int beginLeftX = poit.getX()-4;
 		int beginLeftY = poit.getY()-4;
 		int beginRightX = poit.getX()+4;
 		int beginRightY = poit.getY()+4;
-		if(beginLeftX<rectangel.getLeftUper().getX()){
-			autoShrinkToRight(rectangel);
-		}
-		if(beginLeftY<rectangel.getLeftUper().getY()){
-			autoShrinkToDown(rectangel);
-		}
-		if(beginRightX>rectangel.getRightDown().getX()){
-			autoShrinkToLeft(rectangel);
-		}
-		if(beginRightY>rectangel.getRightDown().getY()){
-			autoShrinkToUp(rectangel);
+		if(beginLeftX==rectangel.getLeftUper().getX()&&(beginRightX==rectangel.getRightDown().getX())){
+		}else{
+			if(beginLeftX==rectangel.getLeftUper().getX()){
+				autoShrinkToRight(rectangel);
+			}
+			if(beginLeftY==rectangel.getLeftUper().getY()){
+				autoShrinkToDown(rectangel);
+			}
+			if(beginRightX==rectangel.getRightDown().getX()){
+				autoShrinkToLeft(rectangel);
+			}
+			if(beginRightY==rectangel.getRightDown().getY()){
+				autoShrinkToUp(rectangel);
+			}
 		}
 	}
 	
@@ -223,20 +248,26 @@ public class CircleWordsUntil {
 	 */
 	private void autoShrinkToRight(Rectangel rectangel){
 		boolean condition = true;
-		while(condition){
+		out:while(condition){
 			int left = rectangel.getLeftUper().getX();
 			int[] edge = new int[imageHeight];
+			int y1 = rectangel.getLeftUper().getY();
+			int y2 = rectangel.getRightDown().getY();
+			if(y1==y2){
+				break;
+			}
 			for (int i = 0; i < imageHeight; i++) {
 				edge[i] = this.imageInfo[i][left];
 			}
-			int y1 = rectangel.getLeftUper().getY();
-			int y2 = rectangel.getRightDown().getY();
 			for (int i = y1; i < y2-1; i++) {
 				//连续两个点的颜色跟背景色一样
 				if((edge[i]&edge[i+1])==background){
 					condition = true;
+					if(rectangel.getLeftUper().getX()==rectangel.getRightDown().getX()){
+						break out;
+					}
 					//向右收缩
-					rectangel.expansionRightSize(-1);
+					rectangel.expansionLeftSize(-1);
 					break;
 				}else{
 					condition = false;
@@ -284,7 +315,7 @@ public class CircleWordsUntil {
 	 */
 	private void autoShrinkToLeft(Rectangel rectangel){
 		boolean condition = true;
-		while(condition){
+		out:while(condition){
 			int right = rectangel.getRightDown().getX();
 			int[] edge = new int[imageHeight];
 			for (int i = 0; i < imageHeight; i++) {
@@ -292,12 +323,18 @@ public class CircleWordsUntil {
 			}
 			int y1 = rectangel.getLeftUper().getY();
 			int y2 = rectangel.getRightDown().getY();
+			if(y1==y2){
+				break;
+			}
 			for (int i = y1; i < y2-1; i++) {
 				//连续两个点的颜色跟背景色一样
 				if((edge[i]&edge[i+1])==background){
 					condition = true;
-					//向左扩张
-					rectangel.expansionLeftSize(-1);
+					if(rectangel.getLeftUper().getX()==rectangel.getRightDown().getX()){
+						break out;
+					}
+					//向左收缩
+					rectangel.expansionRightSize(-1);
 					break;
 				}else{
 					condition = false;
@@ -323,7 +360,7 @@ public class CircleWordsUntil {
 			for (int i = y1; i < y2-1; i++) {
 				//连续两个点的颜色跟背景色不一样
 				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getLeftUper().getX()<=1){
+					if(rectangel.getLeftUper().getX()<=0){
 						condition = false;
 						break;
 					}
@@ -344,17 +381,23 @@ public class CircleWordsUntil {
 	 */
 	private void autoShrinkToUp(Rectangel rectangel){
 		boolean condition = true;
-		while(condition){
+		out:while(condition){
 			int buttom = rectangel.getRightDown().getY();
 			int[] edge = imageInfo[buttom];
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
+			if(x1==x2){
+				break;
+			}
 			for (int i = x1; i < x2-1; i++) {
 				//连续两个点的颜色跟背景色一样
 				if((edge[i]&edge[i+1])==background){
 					condition = true;
-					rectangel.expansionUpSize(-1);
+					if(rectangel.getLeftUper().getY()==rectangel.getRightDown().getY()){
+						break out;
+					}
+					rectangel.expansionDownSize(-1);
 					break;
 				}else{
 					condition = false;
@@ -377,7 +420,7 @@ public class CircleWordsUntil {
 			for (int i = x1; i < x2-1; i++) {
 				//连续两个点的颜色跟背景色不一样
 				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getLeftUper().getY()<=1){
+					if(rectangel.getLeftUper().getY()<=0){
 						condition = false;
 						break;
 					}
@@ -397,17 +440,23 @@ public class CircleWordsUntil {
 	 */
  	private void autoShrinkToDown(Rectangel rectangel){
  		boolean condition = true;
-		while(condition){
+		out:while(condition){
 			int top = rectangel.getLeftUper().getY();
 			int[] edge = imageInfo[top];
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
+			if(x1==x2){
+				break out;
+			}
 			for (int i = x1; i < x2-1; i++) {
 				//连续两个点的颜色跟背景色一样
 				if((edge[i]&edge[i+1])==background){
 					condition = true;
-					rectangel.expansionDownSize(-1);
+					if(rectangel.getLeftUper().getY()==rectangel.getRightDown().getY()){
+						break out;
+					}
+					rectangel.expansionUpSize(-1);
 					break;
 				}else{
 					condition = false;
@@ -431,7 +480,7 @@ public class CircleWordsUntil {
 			for (int i = x1; i < x2-1; i++) {
 				//连续两个点的颜色跟背景色不一样
 				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getRightDown().getX()>=imageHeight-1){
+					if(rectangel.getRightDown().getY()>=imageHeight-1){
 						condition = false;
 						break;
 					}
@@ -459,46 +508,61 @@ public class CircleWordsUntil {
 		int[] topEdge = imageInfo[rectangel.getLeftUper().getY()];
 		int x1 = rectangel.getLeftUper().getX();
 		int x2 = rectangel.getRightDown().getX();
-		
-		int left = 0,right = 0,top = 0,buttom = 0;
-		if(x2>=imageWidth-1){
-			//说明已经超出了 该矩形的右边 已经超出了照片的长度  或者正好压住照片的右边  所以此次右边不能继续再扩张了
-		}
-		for (int i = x1; i < x2-1; i++) {
-			if((topEdge[i]&topEdge[i+1])!=background){
-				return true;
-			}
-		}
-		
-		int[] buttomEdge = imageInfo[rectangel.getRightDown().getY()];
-		for (int i = x1; i < x2-1; i++) {
-			if((buttomEdge[i]&buttomEdge[i+1])!=background){
-				return true;
-			}
-		}
-		
-		int[] rightEdge = new int[imageHeight];
-		for (int i = 0; i < imageHeight; i++) {
-			rightEdge[i] = this.imageInfo[i][x2];
-		}
 		int y1 = rectangel.getLeftUper().getY();
 		int y2 = rectangel.getRightDown().getY();
-		for (int i = y1; i < y2-1; i++) {
-			if ((rightEdge[i]&rightEdge[i+1])!=background) {
-				return true;
+		
+		int checkResult = 0;
+		if(x2>=imageWidth-1){
+			//说明已经超出了 该矩形的右边 已经超出了照片的长度  或者正好压住照片的右边  所以此次右边不能继续再扩张了
+		}else{
+			int[] rightEdge = new int[imageHeight];
+			for (int i = 0; i < imageHeight; i++) {
+				rightEdge[i] = this.imageInfo[i][x2];
+			}
+			for (int i = y1; i < y2-1; i++) {
+				if ((rightEdge[i]&rightEdge[i+1])!=background) {
+					checkResult = checkResult + 4;
+					break;
+				}
 			}
 		}
 		
-		int[] leftEdge = new int[imageHeight];
-		for (int i = 0; i < imageHeight; i++) {
-			leftEdge[i] = this.imageInfo[i][x1];
-		}
-		for (int i = y1; i < y2-1; i++) {
-			if ((leftEdge[i]&leftEdge[i+1])!=background) {
-				return true;
+		if(y2>=imageHeight-1){
+			//说明已经超出了 该矩形的下边 已经超出了照片的长度  或者正好压住照片的下边  所以此次下边不能继续再扩张了
+		}else{
+			int[] buttomEdge = imageInfo[rectangel.getRightDown().getY()];
+			for (int i = x1; i < x2-1; i++) {
+				if((buttomEdge[i]&buttomEdge[i+1])!=background){
+					checkResult = checkResult + 2;
+					break;
+				}
 			}
 		}
 		
-		return false;
+		if(x1<=0){
+			//说明已经超出了 该矩形的左边 已经超出了照片的长度  或者正好压住照片的左边  所以此次左边不能继续再扩张了
+		}else{
+			int[] leftEdge = new int[imageHeight];
+			for (int i = 0; i < imageHeight; i++) {
+				leftEdge[i] = this.imageInfo[i][x1];
+			}
+			for (int i = y1; i < y2-1; i++) {
+				if ((leftEdge[i]&leftEdge[i+1])!=background) {
+					checkResult = checkResult + 1;
+					break;
+				}
+			}
+		}
+		if(y1<=0){
+			//说明已经超出了 该矩形的上边 已经超出了照片的长度  或者正好压住照片的上边  所以此次上边不能继续再扩张了
+		}else{
+			for (int i = x1; i < x2-1; i++) {
+				if((topEdge[i]&topEdge[i+1])!=background){
+					checkResult = checkResult + 8;
+					break;
+				}
+			}
+		}
+		return checkResult;
 	}
 }
