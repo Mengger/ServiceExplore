@@ -1,4 +1,4 @@
-package com.test.image.until;
+package com.test.image.until.circleWords;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,7 +13,7 @@ import com.test.image.entry.ImageUnit;
 import com.test.image.entry.Poit;
 import com.test.image.entry.Rectangel;
 
-public class CircleWordsUntil {
+public class CircleWordsUntil extends CircleWordsCommon{
 
 	private ImageUnit image;
 	
@@ -27,16 +27,17 @@ public class CircleWordsUntil {
 	
 	private Rectangel[][] rectangels;
 	
-	public CircleWordsUntil(ImageUnit image,int background) {
+	public CircleWordsUntil(ImageUnit image, int background) {
 		this.image=image;
 		this.imageInfo=image.getImageInfo();
 		this.imageWidth=image.getImageWidth();
 		this.imageHeight=image.getImageHeight();
 		this.background=background;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-		File file = new File("/Users/jack/Desktop/111.png");
+		//File file = new File("/Users/jack/Desktop/111.png");
+		File file = new File("C://Users//Administrator//Desktop//1.jpg");
 		BufferedImage image = ImageIO.read(file);
 		int h=image.getHeight();
 		int w=image.getWidth();
@@ -47,7 +48,7 @@ public class CircleWordsUntil {
 			}
 		}
 		SegmentFactory seg = new SegmentFactory();
-		int[][] imgg = seg.segmentBybestThresh(img);
+		int[][] imgg = seg.segmentByseg1(img);
 		
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
@@ -66,7 +67,8 @@ public class CircleWordsUntil {
 			}
 		}
 		
-		File wf = new File("/Users/jack/Desktop/222.png");
+		File wf = new File("C://Users//Administrator//Desktop//333.png");
+		//File wf = new File("/Users/jack/Desktop/222.png");
 		ImageIO.write(image, "png", wf);
 		//ImageUnit imageUnit = new ImageUnit(img);
 	}
@@ -152,9 +154,9 @@ public class CircleWordsUntil {
 				needRemove.add(rectangel);
 			}
 		}
-		/*for(Rectangel rectangel:needRemove){
+		for(Rectangel rectangel:needRemove){
 			rectangelList.remove(rectangel);
-		}*/
+		}
 	}
 
 	/**
@@ -241,7 +243,42 @@ public class CircleWordsUntil {
 		}
 	}
 	
+
+	/**
+	 * 根据条件判断矩形是否扩张
+	 * @param dege
+	 * @return
+	 */
+	public boolean isExpansion(int[] dege){
+		int diffCount = 0;
+		for (int i = 0; i < dege.length-1; i++) {
+			if((dege[i]&dege[i+1])!=background){
+				return true;
+			}
+			if(dege[i]!=background){
+				diffCount++;
+			}
+		}
+		if(diffCount>2){
+			return true;
+		}
+		return false;
+	}
 	
+	
+	/**
+	 * 根据条件判断矩形是否 收缩
+	 * @param dege
+	 * @return
+	 */
+	public boolean isShrink(int[] dege){
+		for(int pix:dege){
+			if(pix!=background){
+				return false;
+			}
+		}
+		return true;
+	}
 	/**
 	 * 根据矩形当前的位置  收缩(左边 向右收缩)
 	 * @param rectangel
@@ -259,19 +296,21 @@ public class CircleWordsUntil {
 			for (int i = 0; i < imageHeight; i++) {
 				edge[i] = this.imageInfo[i][left];
 			}
-			for (int i = y1; i < y2-1; i++) {
-				//连续两个点的颜色跟背景色一样
-				if((edge[i]&edge[i+1])==background){
-					condition = true;
-					if(rectangel.getLeftUper().getX()==rectangel.getRightDown().getX()){
-						break out;
-					}
-					//向右收缩
-					rectangel.expansionLeftSize(-1);
-					break;
-				}else{
-					condition = false;
+			int[] dd = new int[y2-y1];
+			int index=0;
+			for (int i = y1; i < y2; i++) {
+				dd[index]=edge[i];
+				index++;
+			}
+			if(isShrink(dd)){
+				condition = true;
+				if(rectangel.getLeftUper().getX()==rectangel.getRightDown().getX()){
+					break out;
 				}
+				//向右收缩
+				rectangel.expansionLeftSize(-1);
+			}else{
+				condition = false;
 			}
 		}
 	}
@@ -290,20 +329,25 @@ public class CircleWordsUntil {
 			}
 			int y1 = rectangel.getLeftUper().getY();
 			int y2 = rectangel.getRightDown().getY();
-			for (int i = y1; i < y2-1; i++) {
+			
+			int[] dd = new int[y2-y1];
+			int index = 0;
+			for (int i = y1; i < y2; i++) {
 				//连续两个点的颜色跟背景色不一样
-				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getRightDown().getX()>=imageWidth-1){
-						condition = false;
-						break;
-					}
-					condition = true;
-					//向右扩张
-					rectangel.expansionRightSize(1);
-					break;
-				}else{
+				dd[index] = edge[i];
+				index++;
+				
+			}
+			if(isExpansion(dd)){
+				if(rectangel.getRightDown().getX()>=imageWidth-1){
 					condition = false;
+					break;
 				}
+				condition = true;
+				//向右扩张
+				rectangel.expansionRightSize(1);
+			}else{
+				condition = false;
 			}
 			
 		}
@@ -326,19 +370,22 @@ public class CircleWordsUntil {
 			if(y1==y2){
 				break;
 			}
-			for (int i = y1; i < y2-1; i++) {
-				//连续两个点的颜色跟背景色一样
-				if((edge[i]&edge[i+1])==background){
-					condition = true;
-					if(rectangel.getLeftUper().getX()==rectangel.getRightDown().getX()){
-						break out;
-					}
-					//向左收缩
-					rectangel.expansionRightSize(-1);
-					break;
-				}else{
-					condition = false;
+			int[] dd = new int[y2-y1];
+			int index=0;
+			for (int i = y1; i < y2; i++) {
+				dd[index]=edge[i];
+				index++;
+			}
+			
+			if(isShrink(dd)){
+				condition = true;
+				if(rectangel.getLeftUper().getX()==rectangel.getRightDown().getX()){
+					break out;
 				}
+				//向左收缩
+				rectangel.expansionRightSize(-1);
+			}else{
+				condition = false;
 			}
 		}
 	}
@@ -357,20 +404,24 @@ public class CircleWordsUntil {
 			}
 			int y1 = rectangel.getLeftUper().getY();
 			int y2 = rectangel.getRightDown().getY();
-			for (int i = y1; i < y2-1; i++) {
+			int[] dd = new int[y2-y1];
+			int index = 0;
+			for (int i = y1; i < y2; i++) {
 				//连续两个点的颜色跟背景色不一样
-				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getLeftUper().getX()<=0){
-						condition = false;
-						break;
-					}
-					condition = true;
-					//向左扩张
-					rectangel.expansionLeftSize(1);
-					break;
-				}else{
+				dd[index] = edge[i];
+				index++;
+				
+			}
+			if(isExpansion(dd)){
+				if(left<=0){
 					condition = false;
+					break;
 				}
+				condition = true;
+				//向左扩张
+				rectangel.expansionLeftSize(1);
+			}else{
+				condition = false;
 			}
 		}
 	}
@@ -390,18 +441,20 @@ public class CircleWordsUntil {
 			if(x1==x2){
 				break;
 			}
-			for (int i = x1; i < x2-1; i++) {
-				//连续两个点的颜色跟背景色一样
-				if((edge[i]&edge[i+1])==background){
-					condition = true;
-					if(rectangel.getLeftUper().getY()==rectangel.getRightDown().getY()){
-						break out;
-					}
-					rectangel.expansionDownSize(-1);
-					break;
-				}else{
-					condition = false;
+			int[] dd = new int[x2-x1];
+			int index=0;
+			for (int i = x1; i < x2; i++) {
+				dd[index]=edge[i];
+				index++;
+			}
+			if(isShrink(dd)){
+				condition = true;
+				if(rectangel.getLeftUper().getY()==rectangel.getRightDown().getY()){
+					break out;
 				}
+				rectangel.expansionDownSize(-1);
+			}else{
+				condition = false;
 			}
 		}
 	}
@@ -417,19 +470,23 @@ public class CircleWordsUntil {
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
-			for (int i = x1; i < x2-1; i++) {
-				//连续两个点的颜色跟背景色不一样
-				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getLeftUper().getY()<=0){
-						condition = false;
-						break;
-					}
-					condition = true;
-					rectangel.expansionUpSize(1);
-					break;
-				}else{
+			
+			int[] dd = new int[x2-x1];
+			int index=0;
+			for (int i = x1; i < x2; i++) {
+				dd[index]=edge[i];
+				index++;
+			}
+			//连续两个点的颜色跟背景色不一样
+			if(isExpansion(dd)){
+				if(rectangel.getLeftUper().getY()<=0){
 					condition = false;
+					break;
 				}
+				condition = true;
+				rectangel.expansionUpSize(1);
+			}else{
+				condition = false;
 			}
 		}
 	}
@@ -449,18 +506,20 @@ public class CircleWordsUntil {
 			if(x1==x2){
 				break out;
 			}
-			for (int i = x1; i < x2-1; i++) {
-				//连续两个点的颜色跟背景色一样
-				if((edge[i]&edge[i+1])==background){
-					condition = true;
-					if(rectangel.getLeftUper().getY()==rectangel.getRightDown().getY()){
-						break out;
-					}
-					rectangel.expansionUpSize(-1);
-					break;
-				}else{
-					condition = false;
+			int[] dd = new int[x2-x1];
+			int index=0;
+			for (int i = x1; i < x2; i++) {
+				dd[index]=edge[i];
+				index++;
+			}
+			if(isShrink(dd)){
+				condition = true;
+				if(rectangel.getLeftUper().getY()==rectangel.getRightDown().getY()){
+					break out;
 				}
+				rectangel.expansionUpSize(-1);
+			}else{
+				condition = false;
 			}
 		}
  	}
@@ -477,19 +536,23 @@ public class CircleWordsUntil {
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
-			for (int i = x1; i < x2-1; i++) {
-				//连续两个点的颜色跟背景色不一样
-				if((edge[i]&edge[i+1])!=background){
-					if(rectangel.getRightDown().getY()>=imageHeight-1){
-						condition = false;
-						break;
-					}
-					condition = true;
-					rectangel.expansionDownSize(1);
-					break;
-				}else{
+			
+			int[] dd = new int[x2-x1];
+			int index=0;
+			for (int i = x1; i < x2; i++) {
+				dd[index]=edge[i];
+				index++;
+			}
+			
+			if(isExpansion(dd)){
+				if(rectangel.getRightDown().getY()>=imageHeight-1){
 					condition = false;
+					break;
 				}
+				condition = true;
+				rectangel.expansionDownSize(1);
+			}else{
+				condition = false;
 			}
 		}
 	}
