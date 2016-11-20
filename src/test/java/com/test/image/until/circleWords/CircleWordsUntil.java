@@ -19,6 +19,8 @@ public class CircleWordsUntil extends CircleWordsCommon{
 	
 	private int[][] imageInfo;
 	
+	private int[][] mirrorImage;
+	
 	private int imageWidth;
 	
 	private int imageHeight;
@@ -29,15 +31,21 @@ public class CircleWordsUntil extends CircleWordsCommon{
 	
 	public CircleWordsUntil(ImageUnit image, int background) {
 		this.image=image;
-		this.imageInfo=image.getImageInfo();
+		this.mirrorImage=image.getImageInfo();
 		this.imageWidth=image.getImageWidth();
 		this.imageHeight=image.getImageHeight();
 		this.background=background;
+		this.imageInfo = new int[imageHeight][imageWidth];
+		for (int i = 0; i < imageHeight; i++) {
+			for (int j = 0; j < imageWidth; j++) {
+				this.imageInfo[i][j] = this.mirrorImage[i][j];
+			}
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
-		//File file = new File("/Users/jack/Desktop/111.png");
-		File file = new File("C://Users//Administrator//Desktop//1.jpg");
+		File file = new File("/Users/jack/Desktop/444.jpg");
+		//File file = new File("C://Users//Administrator//Desktop//444.jpg");
 		BufferedImage image = ImageIO.read(file);
 		int h=image.getHeight();
 		int w=image.getWidth();
@@ -48,7 +56,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 			}
 		}
 		SegmentFactory seg = new SegmentFactory();
-		int[][] imgg = seg.segmentByseg1(img);
+		int[][] imgg = seg.segmentBybestThresh(img);
 		
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
@@ -58,7 +66,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		}
 		
 		CircleWordsUntil ddd=new CircleWordsUntil(new ImageUnit(imgg), -1);
-		ddd.circleFirst();
+		ddd.drowRectangelEdge();
 		
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
@@ -67,13 +75,19 @@ public class CircleWordsUntil extends CircleWordsCommon{
 			}
 		}
 		
-		File wf = new File("C://Users//Administrator//Desktop//333.png");
-		//File wf = new File("/Users/jack/Desktop/222.png");
-		ImageIO.write(image, "png", wf);
+		//File wf = new File("C://Users//Administrator//Desktop//555.png");
+		File wf = new File("/Users/jack/Desktop/6666.jpg");
+		ImageIO.write(image, "jpg", wf);
 		//ImageUnit imageUnit = new ImageUnit(img);
 	}
 	
-	public void circleFirst(){
+	public void drowRectangelEdge(){
+		for (Rectangel rectangel:getRectangelList()) {
+			drowRectangelEdge(rectangel,this.imageInfo);
+		}
+	}
+	
+	public Poit circleFirst(){
 		List<Rectangel> first = generatePoints();
 		autoCircleWords(first);
 		if(first!=null&&first.size()>2){
@@ -90,48 +104,81 @@ public class CircleWordsUntil extends CircleWordsCommon{
 				}
 				index++;
 			}
-			/*first.remove(smallIndex);
-			first.remove(biggestIndex);*/
+			first.remove(smallIndex);
+			first.remove(biggestIndex);
 		}
-
-		for(Rectangel rectangel:first){
-			/*int x1 = rectangel.getLeftUper().getX();
-			int x2 = rectangel.getRightDown().getX();
-			int y1 = rectangel.getLeftUper().getY();
-			int y2 = rectangel.getRightDown().getY();
-			for (int i = y1; i < y2; i++) {
-				for (int j = x1; j < x2; j++) {
-					imageInfo[i][j]=-16777216;
-				}
-			}*/
-			int top = rectangel.getLeftUper().getY();
-			int x1 = rectangel.getLeftUper().getX();
-			int x2 = rectangel.getRightDown().getX();
-			for (int i = x1; i < x2; i++) {
-				imageInfo[top][i]=-16777216;
-			}
-			
-			int buttom = rectangel.getRightDown().getY();
-			for (int i = x1; i < x2; i++) {
-				imageInfo[buttom][i]=-16777216;
-			}
-			
-			int y1 = rectangel.getLeftUper().getY();
-			int y2 = rectangel.getRightDown().getY();
-			for (int i = 0; i < imageHeight; i++) {
-				if(i>y1&&i<=y2){
-					this.imageInfo[i][x1]=-16777216;
-				}
-			}
-			for (int i = 0; i < imageHeight; i++) {
-				if(i>=y1&&i<=y2){
-					this.imageInfo[i][x2]=-16777216;
-				}
-			}
+		int averageH = 0;
+		int averageW = 0;
+		for(Rectangel rectangel :first){
+			averageH+=rectangel.getHeight();
+			averageW+=rectangel.getWidth();
 		}
-		
+		int size = first.size();
+		if(size > 0){
+			averageH = averageH/size;
+			averageW = averageW/size;
+		}
+		return new Poit(averageW, averageH);
 	}
 
+	/**
+	 * 自动将 文中的所有字体圈起来 并获取矩形
+	 * @return
+	 */
+	public List<Rectangel> getRectangelList(){
+		List<Rectangel> rtn = new ArrayList<>();
+		Poit poit = circleFirst();
+		int x = 4;
+		int y = 4;
+		/*if(poit.getX()>16){
+			x = poit.getX()/4;
+		}
+		if(poit.getY()>16){
+			y = poit.getY()/4;
+		}*/
+		for (int i = x; i < imageHeight-x; i+=x) {
+			for (int j = y; j < imageWidth-y; j+=y) {
+				if(mirrorImage[i][j]!=background){
+					Rectangel rectangel = new Rectangel(j-y, i-x, j+y, i+x);
+					automaticCircleSingleWord(rectangel);
+					fillBackgroundToRectangel(rectangel);
+					rtn.add(rectangel);
+				}
+			}
+		}
+		return rtn;
+	}
+	
+	/**
+	 * 矩形 画边
+	 * @param rectangel
+	 */
+	public void drowRectangelEdge(Rectangel rectangel,int[][] img){
+		int top = rectangel.getLeftUper().getY();
+		int x1 = rectangel.getLeftUper().getX();
+		int x2 = rectangel.getRightDown().getX();
+		for (int i = x1; i < x2; i++) {
+			img[top][i]=-16777216;
+		}
+		
+		int buttom = rectangel.getRightDown().getY();
+		for (int i = x1; i < x2; i++) {
+			img[buttom][i]=-16777216;
+		}
+		
+		int y1 = rectangel.getLeftUper().getY();
+		int y2 = rectangel.getRightDown().getY();
+		for (int i = 0; i < imageHeight; i++) {
+			if(i>y1&&i<=y2){
+				img[i][x1]=-16777216;
+			}
+		}
+		for (int i = 0; i < imageHeight; i++) {
+			if(i>=y1&&i<=y2){
+				img[i][x2]=-16777216;
+			}
+		}
+	}
 	
 	/**
 	 * 自动扩张收缩 并且将空的矩形给自动删除  
@@ -139,10 +186,8 @@ public class CircleWordsUntil extends CircleWordsCommon{
 	 * @param rectangelList
 	 */
 	public void autoCircleWords(List<Rectangel> rectangelList){
-		int i=0;
 		List<Rectangel> needRemove = new ArrayList<Rectangel>();
 		for(Rectangel rectangel:rectangelList){
-			System.out.println(++i);
 			automaticCircleSingleWord(rectangel);
 			Poit beginPoit = rectangel.getBeginPont();
 			if((beginPoit.getX()-4)==rectangel.getLeftUper().getX()&&(beginPoit.getX()+4==rectangel.getRightDown().getX())){
@@ -201,7 +246,27 @@ public class CircleWordsUntil extends CircleWordsCommon{
 	
 	
 	/**
+	 * 将矩形中的颜色 修改成背景色一致 包括矩形的边
+	 * @param rectangel
+	 */
+	public void fillBackgroundToRectangel(Rectangel rectangel){
+		int x1 = rectangel.getLeftUper().getX();
+		int x2 = rectangel.getRightDown().getX();
+		int y1 = rectangel.getLeftUper().getY();
+		int y2 = rectangel.getRightDown().getY();
+		for (int i = y1; i < y2; i++) {
+			for (int j = x1; j < x2; j++) {
+				mirrorImage[i][j]=background;
+			}
+		}
+	}
+	
+	/**
 	 * 单个矩形 自动扩张 收缩 圈字
+	 * 1000 --> 8  代表顶边 压住了字
+	 * 0001 --> 1  代表左边 压住了字
+	 * 0010 --> 2  代表底边 压住了字
+	 * 0100 --> 4  代表右边 压住了字
 	 * @param rectangel
 	 */
 	public void automaticCircleSingleWord(Rectangel rectangel){
@@ -243,7 +308,6 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		}
 	}
 	
-
 	/**
 	 * 根据条件判断矩形是否扩张
 	 * @param dege
@@ -264,7 +328,6 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		}
 		return false;
 	}
-	
 	
 	/**
 	 * 根据条件判断矩形是否 收缩
@@ -294,7 +357,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 				break;
 			}
 			for (int i = 0; i < imageHeight; i++) {
-				edge[i] = this.imageInfo[i][left];
+				edge[i] = this.mirrorImage[i][left];
 			}
 			int[] dd = new int[y2-y1];
 			int index=0;
@@ -325,7 +388,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 			int right = rectangel.getRightDown().getX();
 			int[] edge = new int[imageHeight];
 			for (int i = 0; i < imageHeight; i++) {
-				edge[i] = this.imageInfo[i][right];
+				edge[i] = this.mirrorImage[i][right];
 			}
 			int y1 = rectangel.getLeftUper().getY();
 			int y2 = rectangel.getRightDown().getY();
@@ -363,7 +426,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 			int right = rectangel.getRightDown().getX();
 			int[] edge = new int[imageHeight];
 			for (int i = 0; i < imageHeight; i++) {
-				edge[i] = this.imageInfo[i][right];
+				edge[i] = this.mirrorImage[i][right];
 			}
 			int y1 = rectangel.getLeftUper().getY();
 			int y2 = rectangel.getRightDown().getY();
@@ -400,7 +463,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 			int left = rectangel.getLeftUper().getX();
 			int[] edge = new int[imageHeight];
 			for (int i = 0; i < imageHeight; i++) {
-				edge[i] = this.imageInfo[i][left];
+				edge[i] = this.mirrorImage[i][left];
 			}
 			int y1 = rectangel.getLeftUper().getY();
 			int y2 = rectangel.getRightDown().getY();
@@ -434,7 +497,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		boolean condition = true;
 		out:while(condition){
 			int buttom = rectangel.getRightDown().getY();
-			int[] edge = imageInfo[buttom];
+			int[] edge = mirrorImage[buttom];
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
@@ -466,7 +529,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		boolean condition = true;
 		while(condition){
 			int top = rectangel.getLeftUper().getY();
-			int[] edge = imageInfo[top];
+			int[] edge = mirrorImage[top];
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
@@ -499,7 +562,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
  		boolean condition = true;
 		out:while(condition){
 			int top = rectangel.getLeftUper().getY();
-			int[] edge = imageInfo[top];
+			int[] edge = mirrorImage[top];
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
@@ -532,7 +595,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		boolean condition = true;
 		while(condition){
 			int buttom = rectangel.getRightDown().getY();
-			int[] edge = imageInfo[buttom];
+			int[] edge = mirrorImage[buttom];
 			
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
@@ -568,7 +631,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 	 * @return
 	 */
 	public int judgeEdgeIsExitWord(Rectangel rectangel){
-		int[] topEdge = imageInfo[rectangel.getLeftUper().getY()];
+		int[] topEdge = mirrorImage[rectangel.getLeftUper().getY()];
 		int x1 = rectangel.getLeftUper().getX();
 		int x2 = rectangel.getRightDown().getX();
 		int y1 = rectangel.getLeftUper().getY();
@@ -580,7 +643,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		}else{
 			int[] rightEdge = new int[imageHeight];
 			for (int i = 0; i < imageHeight; i++) {
-				rightEdge[i] = this.imageInfo[i][x2];
+				rightEdge[i] = this.mirrorImage[i][x2];
 			}
 			for (int i = y1; i < y2-1; i++) {
 				if ((rightEdge[i]&rightEdge[i+1])!=background) {
@@ -593,7 +656,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		if(y2>=imageHeight-1){
 			//说明已经超出了 该矩形的下边 已经超出了照片的长度  或者正好压住照片的下边  所以此次下边不能继续再扩张了
 		}else{
-			int[] buttomEdge = imageInfo[rectangel.getRightDown().getY()];
+			int[] buttomEdge = mirrorImage[rectangel.getRightDown().getY()];
 			for (int i = x1; i < x2-1; i++) {
 				if((buttomEdge[i]&buttomEdge[i+1])!=background){
 					checkResult = checkResult + 2;
@@ -607,7 +670,7 @@ public class CircleWordsUntil extends CircleWordsCommon{
 		}else{
 			int[] leftEdge = new int[imageHeight];
 			for (int i = 0; i < imageHeight; i++) {
-				leftEdge[i] = this.imageInfo[i][x1];
+				leftEdge[i] = this.mirrorImage[i][x1];
 			}
 			for (int i = y1; i < y2-1; i++) {
 				if ((leftEdge[i]&leftEdge[i+1])!=background) {

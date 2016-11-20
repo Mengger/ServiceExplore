@@ -95,6 +95,7 @@ public class Rectangel {
 	 */
 	public void expansionRightSize(int size){
 		this.rightDown.x=this.rightDown.x+size;
+		this.width+=size;
 	}
 	
 	/**
@@ -103,6 +104,7 @@ public class Rectangel {
 	 */
 	public void expansionLeftSize(int size){
 		this.leftUper.x=this.leftUper.x-size;
+		this.width+=size;
 	}
 	
 	/**
@@ -111,6 +113,7 @@ public class Rectangel {
 	 */
 	public void expansionUpSize(int size){
 		this.leftUper.y=this.leftUper.y-size;
+		this.height+=size;
 	}
 	
 	/**
@@ -119,6 +122,7 @@ public class Rectangel {
 	 */
 	public void expansionDownSize(int size){
 		this.rightDown.y=this.rightDown.y+size;
+		this.height+=size;
 	}
 	
 	/**

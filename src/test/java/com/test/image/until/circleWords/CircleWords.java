@@ -26,8 +26,8 @@ public class CircleWords {
 	private Rectangel[][] rectangels;
 	
 	public static void main(String[] args) throws Exception {
-		//File file = new File("/Users/jack/Desktop/111.png");
-		File file = new File("C://Users//Administrator//Desktop//8.jpg");
+		File file = new File("/Users/jack/Desktop/444.jpg");
+		//File file = new File("C://Users//Administrator//Desktop//8.jpg");
 		BufferedImage image = ImageIO.read(file);
 		int h=image.getHeight();
 		int w=image.getWidth();
@@ -48,18 +48,18 @@ public class CircleWords {
 		}
 		
 		CircleWords ddd=new CircleWords(new ImageUnit(imgg), -1);
-		ddd.deal();
+		//ddd.deal();
 		
-		for (int i = 0; i < h; i++) {
+	/*	for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				//image.setRGB(j, i, -16777216);
 				image.setRGB(j, i, ddd.imageInfo[i][j]);
 			}
-		}
+		}*/
 		
-		File wf = new File("C://Users//Administrator//Desktop//333.png");
-		//File wf = new File("/Users/jack/Desktop/222.png");
-		ImageIO.write(image, "png", wf);
+		//File wf = new File("C://Users//Administrator//Desktop//333.png");
+		File wf = new File("/Users/jack/Desktop/555.jpg");
+		ImageIO.write(image, "jpg", wf);
 		//ImageUnit imageUnit = new ImageUnit(img);
 	}
 	
@@ -137,13 +137,13 @@ public class CircleWords {
 			if(isTopEdge){
 				if(pixNum[i]!=0){
 					topEdgeIndex.add(i);
+					isTopEdge = !isTopEdge;
 				}
-				isTopEdge = !isTopEdge;
 			}else{
 				if(pixNum[i]==0){
 					buttomEdgeIndex.add(i);
+					isTopEdge = !isTopEdge;
 				}
-				isTopEdge = !isTopEdge;
 			}
 			
 		}
@@ -151,16 +151,14 @@ public class CircleWords {
 			int y1 = topEdgeIndex.get(i);
 			int y2 = buttomEdgeIndex.get(i);
 			int[] endWisePress = new int[imageWidth];
-			int index = 0;
 			for (int x = 0; x < imageWidth; x++) {
 				int endWise = 0;
-				for (int y = y1; i < y2; i++) {
+				for (int y = y1; y < y2; y++) {
 					if(imageInfo[y][x]!=background){
 						endWise++;
 					}
 				}
-				endWisePress[index] = endWise;
-				index++;
+				endWisePress[x] = endWise;
 			}
 			
 			boolean isLeftEdge = true;
@@ -169,15 +167,15 @@ public class CircleWords {
 			
 			for (int j = 0; j < endWisePress.length; j++) {
 				if(isLeftEdge){
-					if(pixNum[i]!=0){
+					if(endWisePress[j]!=0){
 						leftIndex.add(j);
+						isLeftEdge = !isLeftEdge;
 					}
-					isLeftEdge = !isLeftEdge;
 				}else{
-					if(pixNum[i]==0){
+					if(endWisePress[j]==0){
 						rightIndex.add(j);
+						isLeftEdge = !isLeftEdge;
 					}
-					isLeftEdge = !isLeftEdge;
 				}
 				
 			}
