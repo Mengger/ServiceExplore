@@ -41,16 +41,23 @@ public class GenerateWords {
 	public void genWordCode(String fileName) throws Exception {
 		WordsDb db = new WordsDb();
 		Map<String, int[]> dbs = new HashMap<>();
+		long startTime = System.currentTimeMillis();
 		for (int i = MIN_INDEX; i <= MAX_INDEX; i++) {
 			int GBKCode = getGBKCode(i);
 			dbs.put(String.valueOf((char) i), GenerateWordUntil.get32PxWordInfo(String.valueOf((char) i)));
 		}
+		long endTime = System.currentTimeMillis();
 		db.setWordDB(dbs);
-		File file = new File("C://Users//Administrator//Desktop//WordsDB.dat");
+		File file = new File("/Users/jack/Desktop/dbs/WordsDB.dat");
 		ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file));
 		os.writeObject(db);
 		os.flush();
+		long lastTime = System.currentTimeMillis();
 		os.close();
+		System.out.println("*********************************");
+		System.out.println("序列化时间："+(lastTime-endTime));
+		System.out.println("造字时间："+(endTime-startTime));
+		System.out.println("*********************************");
 	}
 
 	public static void main(String[] args) throws Exception {

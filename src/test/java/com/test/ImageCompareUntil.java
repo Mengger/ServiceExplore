@@ -3,6 +3,7 @@ package com.test;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class ImageCompareUntil {
 	private static WordsDb WDB;
 	
 	static {
-		File file = new File("C://Users//Administrator//Desktop//WordsDB.dat");
+		File file = new File("/Users/jack/Desktop/dbs/WordsDB.dat");
 		try {
 			FileInputStream fio = new FileInputStream(file);
 			ObjectInputStream io = new ObjectInputStream(fio);
@@ -51,7 +52,7 @@ public class ImageCompareUntil {
 		return rtn;*/
 		
 		
-		File file = new File("C://Users//Administrator//Desktop//俺.png");
+		File file = new File("/Users/jack/Desktop/cutImg/22.png");
 		BufferedImage image = ImageIO.read(file);
 		int h=image.getHeight();
 		int w=image.getWidth();
@@ -62,18 +63,35 @@ public class ImageCompareUntil {
 			}
 		}
 		
+		int[][] newImg = new ShrinkExpansion().ResizeNear01(img, 28, 28);
+		BufferedImage im = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB);
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				im.setRGB(j, i, newImg[i][j]);
+			}
+		}
+		try {
+			ImageIO.write(im, "png",new File("/Users/jack/Desktop/dddd.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		int[] rtn = new int[32];
 		
 		SegmentFactory seg = new SegmentFactory();
-		int[][] imgg = seg.segmentByotsuThresh(img);
+		int[][] imgg = seg.segmentByotsuThresh(newImg);
 		for (int i = 0; i < imgg.length; i++) {
 			int cellValue = 0;
 			for (int j = 0; j < imgg[0].length; j++) {
 				if(imgg[i][j]==-1){
+					System.out.print("0 ");
 				}else{
 					cellValue = (0x1<<(30-j))|cellValue;
+					System.out.print("1 ");
 				}
 			}
+			System.out.println();
 			rtn[i]=cellValue;
 		}
 		

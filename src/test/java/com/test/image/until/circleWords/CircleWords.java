@@ -2,6 +2,7 @@ package com.test.image.until.circleWords;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class CircleWords {
 	private Rectangel[][] rectangels;
 	
 	public static void main(String[] args) throws Exception {
-		File file = new File("/Users/jack/Desktop/444.jpg");
+		File file = new File("/Users/jack/Desktop/111.png");
 		//File file = new File("C://Users//Administrator//Desktop//8.jpg");
 		BufferedImage image = ImageIO.read(file);
 		int h=image.getHeight();
@@ -48,7 +49,7 @@ public class CircleWords {
 		}
 		
 		CircleWords ddd=new CircleWords(new ImageUnit(imgg), -1);
-		//ddd.deal();
+		ddd.deal();
 		
 	/*	for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
@@ -73,8 +74,27 @@ public class CircleWords {
 	
 	
 	public void deal(){
-		
+		String path = "/Users/jack/Desktop/cutImg/";
+		int index=0;
 		for(Rectangel rectangel:getRectangels(transverseScannerImage())){
+			int w = rectangel.getWidth();
+			int h = rectangel.getHeight();
+			int[][] imgInfo = cutImageByRectangel(rectangel);
+			BufferedImage im = new BufferedImage(rectangel.getWidth(), rectangel.getHeight(), BufferedImage.TYPE_INT_RGB);
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					im.setRGB(j, i, imgInfo[i][j]);
+				}
+			}
+			try {
+				ImageIO.write(im, "png",new File(path+index+".png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			index++;
+			
+			//将矩形内的填充为黑色
 			/*int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
 			int y1 = rectangel.getLeftUper().getY();
@@ -84,7 +104,10 @@ public class CircleWords {
 					imageInfo[i][j]=-16777216;
 				}
 			}*/
-			int top = rectangel.getLeftUper().getY();
+			
+			
+			//画出矩形的四条边
+			/*int top = rectangel.getLeftUper().getY();
 			int x1 = rectangel.getLeftUper().getX();
 			int x2 = rectangel.getRightDown().getX();
 			for (int i = x1; i < x2; i++) {
@@ -107,9 +130,39 @@ public class CircleWords {
 				if(i>=y1&&i<=y2){
 					this.imageInfo[i][x2]=-16777216;
 				}
-			}
+			}*/
 		}
 	}
+	
+	/**
+	 * 根据矩形 切出 图片的详细信息
+	 * @param rectangel
+	 * @return
+	 */
+	public int[][] cutImageByRectangel(Rectangel rectangel){ 
+		int h = rectangel.getHeight();
+		int w = rectangel.getWidth();
+		
+		int x0 = rectangel.getLeftUper().getX();
+		int x1 = rectangel.getRightDown().getX();
+		
+		int y0 = rectangel.getLeftUper().getY();
+		int y1 = rectangel.getRightDown().getY();
+		
+		int[][] rtn = new int[h][w];
+		
+		int y=0;
+		for (int i = y0; i < y1; i++) {
+			int x=0;
+			for (int j = x0; j < x1; j++) {
+				rtn[y][x] = imageInfo[i][j];
+				x++;
+			}
+			y++;
+		}
+		return rtn;
+	}
+	
 	/*
 	 * 横向扫描图片 
 	 */

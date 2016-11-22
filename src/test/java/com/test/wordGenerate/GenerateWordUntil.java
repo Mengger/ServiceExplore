@@ -6,8 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -67,7 +65,7 @@ public class GenerateWordUntil {
 		System.out.println();
 		System.out.println();
 		
-		String path = "C://Users//Administrator//Desktop//wdb//";
+		String path = "/Users/jack/Desktop/dbs/words/";
 		ImageIO.write(image, "png", new File(path+code+".png"));
 		
 		int[] word = new int[32];
