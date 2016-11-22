@@ -51,7 +51,7 @@ public class ImageCompareUntil {
 		return rtn;*/
 		
 		
-		File file = new File("C://Users//Administrator//Desktop//个seg.jpg");
+		File file = new File("C://Users//Administrator//Desktop//俺.png");
 		BufferedImage image = ImageIO.read(file);
 		int h=image.getHeight();
 		int w=image.getWidth();
@@ -63,20 +63,17 @@ public class ImageCompareUntil {
 		}
 		
 		int[] rtn = new int[32];
-		int cellValue = 0;
 		
 		SegmentFactory seg = new SegmentFactory();
-		int[][] imgg = seg.segmentBybestThresh(img);
+		int[][] imgg = seg.segmentByotsuThresh(img);
 		for (int i = 0; i < imgg.length; i++) {
+			int cellValue = 0;
 			for (int j = 0; j < imgg[0].length; j++) {
 				if(imgg[i][j]==-1){
-					System.out.print( 0+ " ");
 				}else{
-					System.out.print( 1+ " ");
-					cellValue = cellValue|0x1<<(30-j);
+					cellValue = (0x1<<(30-j))|cellValue;
 				}
 			}
-			System.out.println();
 			rtn[i]=cellValue;
 		}
 		
