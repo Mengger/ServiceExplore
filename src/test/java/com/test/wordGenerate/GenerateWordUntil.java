@@ -4,14 +4,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -19,7 +15,15 @@ import com.test.image.SegmentFactory;
 
 public class GenerateWordUntil {
 
-	public static void outputImage(int w, int h, OutputStream os, String code) throws IOException {
+	
+	/**
+	 * 根据字体 获取对应的点位信息
+	 * @param code
+	 * @return
+	 * @throws Exception 
+	 */
+	public static int[] get32PxWordInfo(String code) throws Exception {
+		int w=32,  h=32;
 		int verifySize = code.length();
 		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = image.createGraphics();
@@ -34,29 +38,60 @@ public class GenerateWordUntil {
 		for (int i = 0; i < verifySize; i++) {
 			g2.drawChars(chars, i, 1, 0, 28);
 		}
-
 		g2.dispose();
-		for (int i = 0; i < 32; i++) {
-			for (int j = 0; j < 32; j++) {
-				if(image.getRGB(j, i)==-1){
+		
+		
+		int[][] img111 = new int[h][w];
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				img111[i][j] = image.getRGB(j, i);
+			}
+		}
+		
+		SegmentFactory seg = new SegmentFactory();
+		int[][] imgg = seg.segmentByotsuThresh(img111);
+		
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if(imgg[i][j]==-1){
 					System.out.print( 0+ " ");
 				}else{
 					System.out.print( 1+ " ");
 				}
+				image.setRGB(j, i, imgg[i][j]);
 			}
 			System.out.println();
 		}
-		ImageIO.write(image, "jpg", os);
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		String path = "C://Users//Administrator//Desktop//wdb//";
+		ImageIO.write(image, "png", new File(path+code+".png"));
+		
+		int[] word = new int[32];
+		for (int i = 0; i < 32; i++) {
+			int cellValue = 0x0;
+			for (int j = 0; j < 32; j++) {
+				if(imgg[i][j]==-1){
+					System.out.print( 0+ " ");
+				}else{
+					System.out.print( 1+ " ");
+					cellValue = (0x1<<(30-j))|cellValue;
+				}
+			}
+			System.out.println();
+			word[i] = cellValue;
+		}
+		return word;
 	}
 
-	public static void main(String[] args) throws Exception {
-
-		outputImage(32, 32,new FileOutputStream(new File("/Users/jack/Desktop/个.jpg")), "个");
-	}
-
-	public void segment() throws Exception {
-		File dir = new File("/Users/jack/Desktop/" + "教28" + ".jpg");
-
+	
+	
+	public static void segment() throws Exception {
+		File dir = new File("C://Users//Administrator//Desktop//个.jpg");
+		
 		BufferedImage image = ImageIO.read(dir);
 		int h = image.getHeight();
 		int w = image.getWidth();
@@ -73,7 +108,7 @@ public class GenerateWordUntil {
 				image.setRGB(j, i, imgg[i][j]);
 			}
 		}
-		File wf = new File("/Users/jack/Desktop/教otsuThresh.jpg");
+		File wf = new File("C://Users//Administrator//Desktop//个seg.jpg");
 		ImageIO.write(image, "jpg", wf);
 	}
 
